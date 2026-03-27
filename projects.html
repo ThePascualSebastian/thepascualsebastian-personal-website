@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Projects — Pascual Sebastian</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,300&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:        #080b10;
+      --bg2:       #0d1117;
+      --bg3:       #131920;
+      --border:    #1e2a35;
+      --accent:    #0ea5e9;
+      --accent2:   #38bdf8;
+      --accent-glow: rgba(14, 165, 233, 0.18);
+      --text:      #f0f6fc;
+      --text-muted:#7a90a4;
+      --text-dim:  #3d5166;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      overflow-x: hidden;
+    }
+
+    /* ── NOISE OVERLAY ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.4;
+    }
+
+    /* ── GRID BACKGROUND ── */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.3;
+      mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 30%, transparent 100%);
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 clamp(24px, 5vw, 80px);
+      height: 64px;
+      background: rgba(8, 11, 16, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      color: var(--accent);
+      letter-spacing: 0.05em;
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--text-muted);
+      text-decoration: none;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active { color: var(--accent); }
+
+    /* ── PAGE HEADER ── */
+    .page-header {
+      position: relative;
+      z-index: 1;
+      padding: 120px clamp(24px, 5vw, 80px) 60px;
+      opacity: 0;
+      animation: fadeUp 0.7s 0.1s forwards;
+    }
+
+    .page-eyebrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--accent);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .page-eyebrow span {
+      display: inline-block;
+      width: 32px;
+      height: 1px;
+      background: var(--accent);
+    }
+
+    .page-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(48px, 8vw, 96px);
+      line-height: 0.92;
+      letter-spacing: 0.02em;
+      color: var(--text);
+    }
+
+    .page-title .accent-line {
+      color: var(--accent);
+      text-shadow: 0 0 80px rgba(14, 165, 233, 0.4);
+    }
+
+    .page-subtitle {
+      margin-top: 20px;
+      font-size: 15px;
+      color: var(--text-muted);
+      max-width: 480px;
+      line-height: 1.7;
+    }
+
+    /* ── PROJECTS GRID ── */
+    .projects-container {
+      position: relative;
+      z-index: 1;
+      padding: 0 clamp(24px, 5vw, 80px) 80px;
+      display: flex;
+      flex-direction: column;
+      gap: 48px;
+    }
+
+    /* ── PROJECT CARD ── */
+    .project-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.3s, box-shadow 0.3s;
+      opacity: 0;
+      animation: fadeUp 0.7s forwards;
+    }
+
+    .project-card:nth-child(1) { animation-delay: 0.2s; }
+    .project-card:nth-child(2) { animation-delay: 0.35s; }
+
+    .project-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), transparent);
+    }
+
+    .project-card:hover {
+      border-color: rgba(14, 165, 233, 0.35);
+      box-shadow: 0 0 60px rgba(14, 165, 233, 0.05);
+    }
+
+    /* ── CARD HEADER ── */
+    .card-header {
+      padding: clamp(28px, 4vw, 48px) clamp(28px, 4vw, 48px) 0;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .card-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .card-badges {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 5px 10px;
+      border: 1px solid;
+    }
+
+    .badge-live {
+      color: #22c55e;
+      border-color: rgba(34, 197, 94, 0.3);
+      background: rgba(34, 197, 94, 0.06);
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .badge-live::before {
+      content: '';
+      width: 5px; height: 5px;
+      background: #22c55e;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    .badge-progress {
+      color: #f59e0b;
+      border-color: rgba(245, 158, 11, 0.3);
+      background: rgba(245, 158, 11, 0.06);
+    }
+
+    .badge-team {
+      color: var(--text-muted);
+      border-color: var(--border);
+      background: var(--bg3);
+    }
+
+    .badge-solo {
+      color: var(--accent);
+      border-color: rgba(14, 165, 233, 0.3);
+      background: rgba(14, 165, 233, 0.06);
+    }
+
+    .card-number {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 80px;
+      color: var(--border);
+      line-height: 1;
+      letter-spacing: 0.02em;
+      user-select: none;
+      flex-shrink: 0;
+    }
+
+    /* ── CARD BODY ── */
+    .card-body {
+      padding: clamp(20px, 3vw, 32px) clamp(28px, 4vw, 48px);
+    }
+
+    .card-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(36px, 5vw, 60px);
+      line-height: 1;
+      letter-spacing: 0.02em;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .card-role {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--accent);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    .card-desc {
+      font-size: 15px;
+      color: var(--text-muted);
+      line-height: 1.75;
+      font-weight: 300;
+      max-width: 680px;
+      margin-bottom: 28px;
+    }
+
+    .card-desc strong {
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    /* ── PHASES (Team Project) ── */
+    .phases-section {
+      margin-bottom: 28px;
+    }
+
+    .phases-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: var(--text-dim);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .phases-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .phase-item {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      padding: 14px 16px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+
+    .phase-item.active {
+      border-color: rgba(34, 197, 94, 0.25);
+      background: rgba(34, 197, 94, 0.03);
+    }
+
+    .phase-item.active::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: #22c55e;
+      opacity: 0.5;
+    }
+
+    .phase-item.pending {
+      opacity: 0.5;
+    }
+
+    .phase-number {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: var(--text-dim);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .phase-name {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      color: var(--text);
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+
+    .phase-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .phase-status {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-top: 8px;
+    }
+
+    .phase-status.live { color: #22c55e; }
+    .phase-status.soon { color: #f59e0b; }
+
+    /* ── CONTRIBUTION BOX ── */
+    .contribution-box {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-left: 2px solid var(--accent);
+      padding: 16px 20px;
+      margin-bottom: 28px;
+    }
+
+    .contribution-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: var(--accent);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .contribution-text {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .contribution-text strong {
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    /* ── TECH STACK ── */
+    .tech-stack {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 32px;
+    }
+
+    .tech-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--text-muted);
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      padding: 5px 10px;
+      letter-spacing: 0.05em;
+    }
+
+    /* ── CARD FOOTER ── */
+    .card-footer {
+      padding: 0 clamp(28px, 4vw, 48px) clamp(28px, 4vw, 48px);
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+      border-top: 1px solid var(--border);
+      padding-top: 24px;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 28px;
+      background: var(--accent);
+      color: #000;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      text-decoration: none;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      transition: all 0.2s;
+      clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+    }
+
+    .btn-primary:hover {
+      background: var(--accent2);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(14, 165, 233, 0.35);
+    }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 28px;
+      background: transparent;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      text-decoration: none;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      border: 1px solid var(--border);
+      transition: all 0.2s;
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    /* ── DIVIDER ── */
+    .section-divider {
+      position: relative;
+      z-index: 1;
+      height: 1px;
+      background: var(--border);
+      margin: 0 clamp(24px, 5vw, 80px) 48px;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      position: relative;
+      z-index: 1;
+      padding: 32px clamp(24px, 5vw, 80px);
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .footer-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 18px;
+      color: var(--text-dim);
+      letter-spacing: 0.05em;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 24px;
+    }
+
+    .footer-links a {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--text-dim);
+      text-decoration: none;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover { color: var(--accent); }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.3; }
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .phases-grid { grid-template-columns: 1fr; }
+      .card-number { display: none; }
+      .nav-links { display: none; }
+      .card-footer { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a href="index.html" class="nav-logo">ps.dev</a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="projects.html" class="active">Projects</a></li>
+      <li><a href="https://github.com/ThePascualSebastian" target="_blank">GitHub</a></li>
+      <li><a href="https://www.linkedin.com/in/pascualsebastian/" target="_blank">LinkedIn</a></li>
+    </ul>
+  </nav>
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <p class="page-eyebrow"><span></span>What I've built</p>
+    <h1 class="page-title">
+      ALL<br>
+      <span class="accent-line">PROJECTS</span>
+    </h1>
+    <p class="page-subtitle">
+      Every project here is live and deployed. Click "View Live App" on any card to see it running right now.
+    </p>
+  </div>
+
+  <!-- PROJECTS -->
+  <div class="projects-container">
+
+    <!-- ── PROJECT 1: VIBE-HUNTER (TEAM) ── -->
+    <div class="project-card">
+      <div class="card-header">
+        <div class="card-meta">
+          <div class="card-badges">
+            <span class="badge badge-live">Phase 1 Live</span>
+            <span class="badge badge-progress">Phase 2 In Progress</span>
+            <span class="badge badge-team">Team Project — CPSC 3750</span>
+          </div>
+        </div>
+        <div class="card-number">01</div>
+      </div>
+
+      <div class="card-body">
+        <h2 class="card-title">Vibe-Hunter</h2>
+        <p class="card-role">My Role: Full-Stack Development &amp; Testing</p>
+
+        <p class="card-desc">
+          A <strong>distributed multiplayer Battleship game</strong> built as a REST API, where players join game lobbies, place ships, and fire at each other's boards through stateless HTTP endpoints.
+          The system is engineered for scalability — a shared MySQL database persists all game state so any server instance can handle any request, with Postman-validated endpoints covering every game phase.
+          Key architectural decision: <strong>all game logic lives in the API layer</strong>, keeping the client thin and the server the single source of truth for board state and turn management.
+        </p>
+
+        <div class="phases-section">
+          <p class="phases-label">Project Phases</p>
+          <div class="phases-grid">
+            <div class="phase-item active">
+              <p class="phase-number">Phase 01</p>
+              <p class="phase-name">REST API Foundation</p>
+              <p class="phase-desc">Core game endpoints: register, join, place ships, fire, game state. Full Postman test suite.</p>
+              <p class="phase-status live">● Live Now</p>
+            </div>
+            <div class="phase-item pending">
+              <p class="phase-number">Phase 02</p>
+              <p class="phase-name">Database & Persistence</p>
+              <p class="phase-desc">Persistent game sessions, player stats, leaderboard, and extended game logic.</p>
+              <p class="phase-status soon">⧖ In Progress</p>
+            </div>
+            <div class="phase-item pending">
+              <p class="phase-number">Phase 03</p>
+              <p class="phase-name">Multi-User & UI</p>
+              <p class="phase-desc">Real-time multiplayer interface, live game board, and full collaborative features.</p>
+              <p class="phase-status soon">⧖ Coming Soon</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="contribution-box">
+          <p class="contribution-label">My Specific Contributions</p>
+          <p class="contribution-text">
+            <strong>Full-stack development and testing</strong> — built and validated all PHP REST API endpoints, wrote the complete Postman test collection covering player registration, game flow, ship placement, and fire logic. Handled all endpoint debugging and ensured consistent JSON response shapes across every game state.
+          </p>
+        </div>
+
+        <div class="tech-stack">
+          <span class="tech-tag">PHP</span>
+          <span class="tech-tag">MySQL</span>
+          <span class="tech-tag">REST API</span>
+          <span class="tech-tag">Postman</span>
+          <span class="tech-tag">HTML/CSS</span>
+          <span class="tech-tag">Hostinger</span>
+        </div>
+      </div>
+
+      <div class="card-footer">
+        <a href="https://vibe-hunter.com" target="_blank" class="btn-primary">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          View Live App
+        </a>
+        <a href="https://github.com/Txue21/Final-Project-Vibe-Hunter" target="_blank" class="btn-secondary">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>
+          GitHub
+        </a>
+      </div>
+    </div>
+
+    <!-- ── PROJECT 2: NBA COLLECTION MANAGER (SOLO) ── -->
+    <div class="project-card">
+      <div class="card-header">
+        <div class="card-meta">
+          <div class="card-badges">
+            <span class="badge badge-live">Live & Deployed</span>
+            <span class="badge badge-solo">Solo Project — CPSC 3750</span>
+          </div>
+        </div>
+        <div class="card-number">02</div>
+      </div>
+
+      <div class="card-body">
+        <h2 class="card-title">NBA Collection Manager</h2>
+        <p class="card-role">My Role: Solo Full-Stack Developer</p>
+
+        <p class="card-desc">
+          A <strong>full-stack player collection manager</strong> with live CRUD operations, search, filtering by position, multi-column sorting, and a stats dashboard — all backed by a PHP REST API and MySQL database.
+          The interesting challenge was building a single-page experience where every action (add, edit, delete, filter) hits the API and re-renders without a page reload, giving it the feel of a native app.
+          Key architecture decision: <strong>all database logic is centralized in one PHP router</strong> using PDO with parameterized queries, making the API both secure and easy to extend with new endpoints.
+        </p>
+
+        <div class="contribution-box">
+          <p class="contribution-label">My Specific Contributions</p>
+          <p class="contribution-text">
+            <strong>Sole developer</strong> — designed and built the complete frontend SPA, PHP REST API, MySQL schema, seed data pipeline, and deployment on InfinityFree with a custom domain and Let's Encrypt SSL.
+          </p>
+        </div>
+
+        <div class="tech-stack">
+          <span class="tech-tag">PHP</span>
+          <span class="tech-tag">MySQL</span>
+          <span class="tech-tag">JavaScript</span>
+          <span class="tech-tag">REST API</span>
+          <span class="tech-tag">HTML/CSS</span>
+          <span class="tech-tag">InfinityFree</span>
+        </div>
+      </div>
+
+      <div class="card-footer">
+        <a href="https://nba.thepascualsebastian.com" target="_blank" class="btn-primary">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          View Live App
+        </a>
+        <a href="https://github.com/ThePascualSebastian/NBA-Collection-Manager-SP3" target="_blank" class="btn-secondary">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>
+          GitHub
+        </a>
+      </div>
+    </div>
+
+  </div><!-- end projects-container -->
+
+  <!-- FOOTER -->
+  <footer>
+    <span class="footer-name">PASCUAL SEBASTIAN</span>
+    <div class="footer-links">
+      <a href="mailto:pascua9637@gmail.com">Email</a>
+      <a href="https://www.linkedin.com/in/pascualsebastian/" target="_blank">LinkedIn</a>
+      <a href="https://github.com/ThePascualSebastian" target="_blank">GitHub</a>
+    </div>
+  </footer>
+
+</body>
+</html>
