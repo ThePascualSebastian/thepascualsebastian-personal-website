@@ -72,7 +72,6 @@
     .badge { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; padding: 5px 10px; border: 1px solid; }
     .badge-live { color: #22c55e; border-color: rgba(34, 197, 94, 0.3); background: rgba(34, 197, 94, 0.06); display: inline-flex; align-items: center; gap: 5px; }
     .badge-live::before { content: ''; width: 5px; height: 5px; background: #22c55e; border-radius: 50%; animation: pulse 2s infinite; }
-    .badge-progress { color: #f59e0b; border-color: rgba(245, 158, 11, 0.3); background: rgba(245, 158, 11, 0.06); }
     .badge-team { color: var(--text-muted); border-color: var(--border); background: var(--bg3); }
     .badge-solo { color: var(--accent); border-color: rgba(14, 165, 233, 0.3); background: rgba(14, 165, 233, 0.06); }
     .card-number { font-family: 'Bebas Neue', sans-serif; font-size: 80px; color: var(--border); line-height: 1; letter-spacing: 0.02em; user-select: none; flex-shrink: 0; }
@@ -83,17 +82,15 @@
     .card-desc strong { color: var(--text); font-weight: 500; }
     .phases-section { margin-bottom: 28px; }
     .phases-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-dim); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 12px; }
-    .phases-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .phases-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
     .phase-item { background: var(--bg3); border: 1px solid var(--border); padding: 14px 16px; position: relative; overflow: hidden; transition: border-color 0.2s; }
     .phase-item.active { border-color: rgba(34, 197, 94, 0.25); background: rgba(34, 197, 94, 0.03); }
     .phase-item.active::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: #22c55e; opacity: 0.5; }
-    .phase-item.pending { opacity: 0.5; }
     .phase-number { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-dim); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 6px; }
     .phase-name { font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--text); font-weight: 500; margin-bottom: 4px; }
     .phase-desc { font-size: 11px; color: var(--text-muted); line-height: 1.5; }
     .phase-status { font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; margin-top: 8px; }
     .phase-status.live { color: #22c55e; }
-    .phase-status.soon { color: #f59e0b; }
     .contribution-box { background: var(--bg3); border: 1px solid var(--border); border-left: 2px solid var(--accent); padding: 16px 20px; margin-bottom: 28px; }
     .contribution-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--accent); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 8px; }
     .contribution-text { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
@@ -154,7 +151,7 @@
         <div class="card-meta">
           <div class="card-badges">
             <span class="badge badge-live">Phase 1 Live</span>
-            <span class="badge badge-progress">Phase 2 In Progress</span>
+            <span class="badge badge-live">Phase 2 Live</span>
             <span class="badge badge-team">Team Project — CPSC 3750</span>
           </div>
         </div>
@@ -167,8 +164,8 @@
 
         <p class="card-desc">
           A <strong>distributed multiplayer Battleship game</strong> built as a REST API, where players join game lobbies, place ships, and fire at each other's boards through stateless HTTP endpoints.
-          The system is engineered for scalability — a shared MySQL database persists all game state so any server instance can handle any request, with Postman-validated endpoints covering every game phase.
-          Key architectural decision: <strong>all game logic lives in the API layer</strong>, keeping the client thin and the server the single source of truth for board state and turn management.
+          The system is engineered for scalability — a shared MySQL database persists all game state so any server instance can handle any request, with a <strong>fully transactional fire endpoint using row-level locking</strong> to prevent race conditions under concurrent play.
+          Key architectural decision: <strong>all game logic lives in the API layer with no in-memory sessions</strong>, keeping every state change an atomic database commit and making the system horizontally scalable from day one.
         </p>
 
         <div class="phases-section">
@@ -177,20 +174,14 @@
             <div class="phase-item active">
               <p class="phase-number">Phase 01</p>
               <p class="phase-name">REST API Foundation</p>
-              <p class="phase-desc">Core game endpoints: register, join, place ships, fire, game state. Full Postman test suite.</p>
+              <p class="phase-desc">Core game endpoints: register, join, place ships, fire, game state. Full Postman test suite covering all 9 endpoints.</p>
               <p class="phase-status live">&#9679; Live Now</p>
             </div>
-            <div class="phase-item pending">
+            <div class="phase-item active">
               <p class="phase-number">Phase 02</p>
               <p class="phase-name">Database &amp; Persistence</p>
-              <p class="phase-desc">Persistent game sessions, player stats, leaderboard, and extended game logic.</p>
-              <p class="phase-status soon">&#10727; In Progress</p>
-            </div>
-            <div class="phase-item pending">
-              <p class="phase-number">Phase 03</p>
-              <p class="phase-name">Multi-User &amp; UI</p>
-              <p class="phase-desc">Real-time multiplayer interface, live game board, and full collaborative features.</p>
-              <p class="phase-status soon">&#10727; Coming Soon</p>
+              <p class="phase-desc">Persistent game sessions, lifetime player stats, move history with timestamps, and transactional fire logic with row-level locking.</p>
+              <p class="phase-status live">&#9679; Live Now</p>
             </div>
           </div>
         </div>
@@ -198,7 +189,10 @@
         <div class="contribution-box">
           <p class="contribution-label">My Specific Contributions</p>
           <p class="contribution-text">
-            <strong>Full-stack development and testing</strong> — built and validated all PHP REST API endpoints, wrote the complete Postman test collection covering player registration, game flow, ship placement, and fire logic. Handled all endpoint debugging and ensured consistent JSON response shapes across every game state.
+            <strong>Identified and fixed PHP closure scope bugs</strong> in games.php and join.php that caused incorrect game state responses.
+            <strong>Led the full testing strategy</strong> — built the Postman collection with automated assertions covering player registration, game flow, ship placement, fire logic, and all edge cases.
+            <strong>Diagnosed and resolved the player_id schema migration</strong> from UUID to INT AUTO_INCREMENT, and updated all endpoint files to correctly cast player_id as integer throughout.
+            Maintained the AI Collaboration Log and all project documentation.
           </p>
         </div>
 
@@ -213,7 +207,7 @@
       </div>
 
       <div class="card-footer">
-        <a href="https://vibe-hunter.com" target="_blank" class="btn-primary">
+        <a href="https://vibe-hunter.com/battleship/" target="_blank" class="btn-primary">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
           View Live App
         </a>
