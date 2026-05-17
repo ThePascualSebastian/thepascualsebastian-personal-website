@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Dark background square with clipped corners -->
+  <polygon points="8,0 56,0 64,8 64,56 56,64 8,64 0,56 0,8" fill="#080b10"/>
+  <!-- Accent border -->
+  <polygon points="8,0 56,0 64,8 64,56 56,64 8,64 0,56 0,8" fill="none" stroke="#0ea5e9" stroke-width="2"/>
+  <!-- PS monogram in Bebas-style bold lettering -->
+  <text x="50%" y="68%" dominant-baseline="middle" text-anchor="middle"
+        font-family="'Bebas Neue', 'Arial Black', sans-serif"
+        font-size="30" font-weight="900"
+        fill="#0ea5e9" letter-spacing="1">PS</text>
+</svg>

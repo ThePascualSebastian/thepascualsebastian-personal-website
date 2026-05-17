@@ -4,45 +4,60 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Projects — Pascual Sebastian</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,300&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
   <style>
+    /* ─── CSS Custom Properties ─────────────────────────────── */
     :root {
-      --bg:        #080b10;
-      --bg2:       #0d1117;
-      --bg3:       #131920;
-      --border:    #1e2a35;
-      --accent:    #0ea5e9;
-      --accent2:   #38bdf8;
+      --bg:          #080b10;
+      --bg2:         #0d1117;
+      --bg3:         #131920;
+      --border:      #1e2a35;
+      --accent:      #0ea5e9;
+      --accent2:     #38bdf8;
       --accent-glow: rgba(14, 165, 233, 0.18);
-      --text:      #f0f6fc;
-      --text-muted:#7a90a4;
-      --text-dim:  #3d5166;
+      --text:        #f0f6fc;
+      --text-muted:  #7a90a4;
+      --text-dim:    #3d5166;
     }
+
+    /* ─── Reset & Base ──────────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
-    body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; font-weight: 300; overflow-x: hidden; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      overflow-x: hidden;
+    }
+
+    /* Noise texture overlay */
     body::before {
       content: '';
-      position: fixed;
-      inset: 0;
+      position: fixed; inset: 0;
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-      pointer-events: none;
-      z-index: 0;
-      opacity: 0.4;
+      pointer-events: none; z-index: 0; opacity: 0.4;
     }
+
+    /* Grid overlay */
     body::after {
       content: '';
-      position: fixed;
-      inset: 0;
+      position: fixed; inset: 0;
       background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px);
       background-size: 60px 60px;
-      pointer-events: none;
-      z-index: 0;
-      opacity: 0.3;
+      pointer-events: none; z-index: 0; opacity: 0.3;
       mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 30%, transparent 100%);
     }
+
+    /* ─── Navigation ────────────────────────────────────────── */
     nav {
       position: fixed; top: 0; left: 0; right: 0; z-index: 100;
       display: flex; align-items: center; justify-content: space-between;
@@ -54,32 +69,66 @@
     .nav-links { display: flex; gap: 32px; list-style: none; }
     .nav-links a { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-muted); text-decoration: none; letter-spacing: 0.08em; text-transform: uppercase; transition: color 0.2s; }
     .nav-links a:hover, .nav-links a.active { color: var(--accent); }
-    .page-header { position: relative; z-index: 1; padding: 120px clamp(24px, 5vw, 80px) 60px; opacity: 0; animation: fadeUp 0.7s 0.1s forwards; }
+    .nav-toggle { display: none; flex-direction: column; gap: 5px; cursor: pointer; background: none; border: none; padding: 4px; }
+    .nav-toggle span { display: block; width: 22px; height: 2px; background: var(--text-muted); transition: all 0.3s; }
+
+    /* ─── Page Header ───────────────────────────────────────── */
+    .page-header {
+      position: relative; z-index: 1;
+      padding: 120px clamp(24px, 5vw, 80px) 60px;
+      opacity: 0; animation: fadeUp 0.7s 0.1s forwards;
+    }
     .page-eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--accent); letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 16px; display: flex; align-items: center; gap: 12px; }
     .page-eyebrow span { display: inline-block; width: 32px; height: 1px; background: var(--accent); }
     .page-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(48px, 8vw, 96px); line-height: 0.92; letter-spacing: 0.02em; color: var(--text); }
     .page-title .accent-line { color: var(--accent); text-shadow: 0 0 80px rgba(14, 165, 233, 0.4); }
     .page-subtitle { margin-top: 20px; font-size: 15px; color: var(--text-muted); max-width: 480px; line-height: 1.7; }
-    .projects-container { position: relative; z-index: 1; padding: 0 clamp(24px, 5vw, 80px) 80px; display: flex; flex-direction: column; gap: 48px; }
-    .project-card { background: var(--bg2); border: 1px solid var(--border); position: relative; overflow: hidden; transition: border-color 0.3s, box-shadow 0.3s; opacity: 0; animation: fadeUp 0.7s forwards; }
+
+    /* ─── Project Cards Container ───────────────────────────── */
+    .projects-container {
+      position: relative; z-index: 1;
+      padding: 0 clamp(24px, 5vw, 80px) 80px;
+      display: flex; flex-direction: column; gap: 48px;
+    }
+
+    /* Individual project card */
+    .project-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      position: relative; overflow: hidden;
+      transition: border-color 0.3s, box-shadow 0.3s;
+      opacity: 0; animation: fadeUp 0.7s forwards;
+    }
     .project-card:nth-child(1) { animation-delay: 0.2s; }
     .project-card:nth-child(2) { animation-delay: 0.35s; }
+    .project-card:nth-child(3) { animation-delay: 0.5s; }
+
+    /* Top accent line on each card */
     .project-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--accent), transparent); }
     .project-card:hover { border-color: rgba(14, 165, 233, 0.35); box-shadow: 0 0 60px rgba(14, 165, 233, 0.05); }
+
+    /* Card layout sections */
     .card-header { padding: clamp(28px, 4vw, 48px) clamp(28px, 4vw, 48px) 0; display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
     .card-meta { display: flex; flex-direction: column; gap: 10px; }
     .card-badges { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    /* Badge variants */
     .badge { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; padding: 5px 10px; border: 1px solid; }
     .badge-live { color: #22c55e; border-color: rgba(34, 197, 94, 0.3); background: rgba(34, 197, 94, 0.06); display: inline-flex; align-items: center; gap: 5px; }
     .badge-live::before { content: ''; width: 5px; height: 5px; background: #22c55e; border-radius: 50%; animation: pulse 2s infinite; }
     .badge-team { color: var(--text-muted); border-color: var(--border); background: var(--bg3); }
     .badge-solo { color: var(--accent); border-color: rgba(14, 165, 233, 0.3); background: rgba(14, 165, 233, 0.06); }
+
+    /* Large decorative card number */
     .card-number { font-family: 'Bebas Neue', sans-serif; font-size: 80px; color: var(--border); line-height: 1; letter-spacing: 0.02em; user-select: none; flex-shrink: 0; }
+
     .card-body { padding: clamp(20px, 3vw, 32px) clamp(28px, 4vw, 48px); }
     .card-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(36px, 5vw, 60px); line-height: 1; letter-spacing: 0.02em; color: var(--text); margin-bottom: 8px; }
     .card-role { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--accent); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 20px; }
     .card-desc { font-size: 15px; color: var(--text-muted); line-height: 1.75; font-weight: 300; max-width: 680px; margin-bottom: 28px; }
     .card-desc strong { color: var(--text); font-weight: 500; }
+
+    /* Phase grid inside Vibe-Hunter card */
     .phases-section { margin-bottom: 28px; }
     .phases-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-dim); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 12px; }
     .phases-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
@@ -91,46 +140,75 @@
     .phase-desc { font-size: 11px; color: var(--text-muted); line-height: 1.5; }
     .phase-status { font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; margin-top: 8px; }
     .phase-status.live { color: #22c55e; }
+
+    /* Highlighted contribution box */
     .contribution-box { background: var(--bg3); border: 1px solid var(--border); border-left: 2px solid var(--accent); padding: 16px 20px; margin-bottom: 28px; }
     .contribution-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--accent); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 8px; }
     .contribution-text { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
     .contribution-text strong { color: var(--text); font-weight: 500; }
+
+    /* Tech tag chips */
     .tech-stack { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 32px; }
     .tech-tag { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-muted); background: var(--bg3); border: 1px solid var(--border); padding: 5px 10px; letter-spacing: 0.05em; }
+
+    /* Card footer with action buttons */
     .card-footer { padding: 0 clamp(28px, 4vw, 48px) clamp(28px, 4vw, 48px); display: flex; gap: 12px; flex-wrap: wrap; align-items: center; border-top: 1px solid var(--border); padding-top: 24px; }
+
+    /* ─── Buttons ───────────────────────────────────────────── */
     .btn-primary { display: inline-flex; align-items: center; gap: 8px; padding: 14px 28px; background: var(--accent); color: #000; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 700; text-decoration: none; letter-spacing: 0.04em; text-transform: uppercase; transition: all 0.2s; clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px)); }
     .btn-primary:hover { background: var(--accent2); transform: translateY(-2px); box-shadow: 0 8px 30px rgba(14, 165, 233, 0.35); }
     .btn-secondary { display: inline-flex; align-items: center; gap: 8px; padding: 14px 28px; background: transparent; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; text-decoration: none; letter-spacing: 0.04em; text-transform: uppercase; border: 1px solid var(--border); transition: all 0.2s; }
     .btn-secondary:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+
+    /* ─── Footer ────────────────────────────────────────────── */
     footer { position: relative; z-index: 1; padding: 32px clamp(24px, 5vw, 80px); border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
     .footer-name { font-family: 'Bebas Neue', sans-serif; font-size: 18px; color: var(--text-dim); letter-spacing: 0.05em; }
     .footer-links { display: flex; gap: 24px; }
     .footer-links a { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-dim); text-decoration: none; letter-spacing: 0.08em; text-transform: uppercase; transition: color 0.2s; }
     .footer-links a:hover { color: var(--accent); }
+
+    /* ─── Animations ────────────────────────────────────────── */
     @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+    /* ─── Responsive ────────────────────────────────────────── */
     @media (max-width: 768px) {
       .phases-grid { grid-template-columns: 1fr; }
       .card-number { display: none; }
-      .nav-links { display: none; }
+      .nav-links {
+        display: none; position: fixed; top: 64px; left: 0; right: 0;
+        background: rgba(8, 11, 16, 0.97); backdrop-filter: blur(12px);
+        flex-direction: column; gap: 0; border-bottom: 1px solid var(--border); z-index: 99;
+      }
+      .nav-links.open { display: flex; }
+      .nav-links li { border-bottom: 1px solid var(--border); }
+      .nav-links a { display: block; padding: 18px clamp(24px, 5vw, 80px); }
+      .nav-toggle { display: flex; }
       .card-footer { flex-direction: column; align-items: flex-start; }
+    }
+    @media (max-width: 480px) {
+      .btn-primary, .btn-secondary { width: 100%; justify-content: center; }
     }
   </style>
 </head>
 <body>
 
-  <!-- NAV -->
+  <!-- ─── Navigation ──────────────────────────────────────────── -->
   <nav>
     <a href="/" class="nav-logo">thepascualsebastian.com</a>
-    <ul class="nav-links">
+    <ul class="nav-links" id="navLinks">
       <li><a href="/">Home</a></li>
       <li><a href="/projects" class="active">Projects</a></li>
-      <li><a href="https://github.com/ThePascualSebastian" target="_blank">GitHub</a></li>
-      <li><a href="https://www.linkedin.com/in/pascualsebastian/" target="_blank">LinkedIn</a></li>
+      <li><a href="/experience">Experience</a></li>
+      <li><a href="/about">About</a></li>
+      <li><a href="/contact">Contact</a></li>
     </ul>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+      <span></span><span></span><span></span>
+    </button>
   </nav>
 
-  <!-- PAGE HEADER -->
+  <!-- ─── Page Header ─────────────────────────────────────────── -->
   <div class="page-header">
     <p class="page-eyebrow"><span></span>What I've built</p>
     <h1 class="page-title">
@@ -142,14 +220,15 @@
     </p>
   </div>
 
-  <!-- PROJECTS -->
+  <!-- ─── Projects ────────────────────────────────────────────── -->
   <div class="projects-container">
 
-    <!-- ── PROJECT 1: VIBE-HUNTER (TEAM) ── -->
+    <!-- ── Project 01: Vibe-Hunter (Team) ── -->
     <div class="project-card">
       <div class="card-header">
         <div class="card-meta">
           <div class="card-badges">
+            <!-- Both phases are now live -->
             <span class="badge badge-live">Phase 1 Live</span>
             <span class="badge badge-live">Phase 2 Live</span>
             <span class="badge badge-team">Team Project — CPSC 3750</span>
@@ -163,11 +242,16 @@
         <p class="card-role">My Role: Full-Stack Development &amp; Testing</p>
 
         <p class="card-desc">
-          A <strong>distributed multiplayer Battleship game</strong> built as a REST API, where players join game lobbies, place ships, and fire at each other's boards through stateless HTTP endpoints.
-          The system is engineered for scalability — a shared MySQL database persists all game state so any server instance can handle any request, with a <strong>fully transactional fire endpoint using row-level locking</strong> to prevent race conditions under concurrent play.
-          Key architectural decision: <strong>all game logic lives in the API layer with no in-memory sessions</strong>, keeping every state change an atomic database commit and making the system horizontally scalable from day one.
+          A <strong>distributed multiplayer Battleship game</strong> built as a REST API, where players join game lobbies,
+          place ships, and fire at each other's boards through stateless HTTP endpoints.
+          The system is engineered for scalability — a shared MySQL database persists all game state so any server
+          instance can handle any request, with a <strong>fully transactional fire endpoint using row-level locking</strong>
+          to prevent race conditions under concurrent play.
+          Key architectural decision: <strong>all game logic lives in the API layer with no in-memory sessions</strong>,
+          keeping every state change an atomic database commit and making the system horizontally scalable from day one.
         </p>
 
+        <!-- Phase breakdown grid -->
         <div class="phases-section">
           <p class="phases-label">Project Phases</p>
           <div class="phases-grid">
@@ -186,6 +270,7 @@
           </div>
         </div>
 
+        <!-- My specific contributions -->
         <div class="contribution-box">
           <p class="contribution-label">My Specific Contributions</p>
           <p class="contribution-text">
@@ -218,7 +303,7 @@
       </div>
     </div>
 
-    <!-- ── PROJECT 2: NBA COLLECTION MANAGER (SOLO) ── -->
+    <!-- ── Project 02: NBA Collection Manager (Solo) ── -->
     <div class="project-card">
       <div class="card-header">
         <div class="card-meta">
@@ -235,15 +320,19 @@
         <p class="card-role">My Role: Solo Full-Stack Developer</p>
 
         <p class="card-desc">
-          A <strong>full-stack player collection manager</strong> with live CRUD operations, search, filtering by position, multi-column sorting, and a stats dashboard — all backed by a PHP REST API and MySQL database.
-          The interesting challenge was building a single-page experience where every action (add, edit, delete, filter) hits the API and re-renders without a page reload, giving it the feel of a native app.
-          Key architecture decision: <strong>all database logic is centralized in one PHP router</strong> using PDO with parameterized queries, making the API both secure and easy to extend with new endpoints.
+          A <strong>full-stack player collection manager</strong> with live CRUD operations, search, filtering by position,
+          multi-column sorting, and a stats dashboard — all backed by a PHP REST API and MySQL database.
+          The interesting challenge was building a single-page experience where every action (add, edit, delete, filter)
+          hits the API and re-renders without a page reload, giving it the feel of a native app.
+          Key architecture decision: <strong>all database logic is centralized in one PHP router</strong> using PDO with
+          parameterized queries, making the API both secure and easy to extend with new endpoints.
         </p>
 
         <div class="contribution-box">
           <p class="contribution-label">My Specific Contributions</p>
           <p class="contribution-text">
-            <strong>Sole developer</strong> — designed and built the complete frontend SPA, PHP REST API, MySQL schema, seed data pipeline, and deployment on InfinityFree with a custom domain and Let's Encrypt SSL.
+            <strong>Sole developer</strong> — designed and built the complete frontend SPA, PHP REST API, MySQL schema,
+            seed data pipeline, and deployment on InfinityFree with a custom domain and Let's Encrypt SSL.
           </p>
         </div>
 
@@ -269,9 +358,48 @@
       </div>
     </div>
 
-  </div>
+    <!-- ── Project 03: ReadRight App (Flutter) ── -->
+    <div class="project-card">
+      <div class="card-header">
+        <div class="card-meta">
+          <div class="card-badges">
+            <span class="badge badge-solo">Solo Project — CPSC Coursework</span>
+          </div>
+        </div>
+        <div class="card-number">03</div>
+      </div>
 
-  <!-- FOOTER -->
+      <div class="card-body">
+        <h2 class="card-title">ReadRight App</h2>
+        <p class="card-role">My Role: Solo Mobile Developer</p>
+
+        <p class="card-desc">
+          A <strong>Flutter mobile app</strong> enabling elementary students to practice reading aloud with pronunciation
+          feedback, while allowing teachers to assign word lists and review student progress.
+          Built with <strong>role-based authentication</strong>, audio assessment workflows, and progress tracking using
+          Firebase — with support for offline use and CSV exports.
+        </p>
+
+        <div class="tech-stack">
+          <span class="tech-tag">Flutter</span>
+          <span class="tech-tag">Dart</span>
+          <span class="tech-tag">Firebase</span>
+          <span class="tech-tag">Audio Assessment</span>
+          <span class="tech-tag">Role-Based Auth</span>
+        </div>
+      </div>
+
+      <div class="card-footer">
+        <a href="https://github.com/ThePascualSebastian/CPSC_4150_ReadRight_App" target="_blank" class="btn-secondary">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>
+          GitHub
+        </a>
+      </div>
+    </div>
+
+  </div><!-- end .projects-container -->
+
+  <!-- ─── Footer ───────────────────────────────────────────────── -->
   <footer>
     <span class="footer-name">PASCUAL SEBASTIAN</span>
     <div class="footer-links">
@@ -280,6 +408,14 @@
       <a href="https://github.com/ThePascualSebastian" target="_blank">GitHub</a>
     </div>
   </footer>
+
+  <!-- ─── Mobile Nav Toggle ────────────────────────────────────── -->
+  <script>
+    const toggle = document.getElementById('navToggle');
+    const links  = document.getElementById('navLinks');
+    toggle.addEventListener('click', () => links.classList.toggle('open'));
+    links.querySelectorAll('a').forEach(a => a.addEventListener('click', () => links.classList.remove('open')));
+  </script>
 
 </body>
 </html>

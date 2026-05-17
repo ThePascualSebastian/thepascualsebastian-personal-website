@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About — Pascual Sebastian</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,300&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+    /* ─── CSS Custom Properties ─────────────────────────────── */
+    :root {
+      --bg:          #080b10;
+      --bg2:         #0d1117;
+      --bg3:         #131920;
+      --border:      #1e2a35;
+      --accent:      #0ea5e9;
+      --accent2:     #38bdf8;
+      --accent-glow: rgba(14, 165, 233, 0.18);
+      --text:        #f0f6fc;
+      --text-muted:  #7a90a4;
+      --text-dim:    #3d5166;
+    }
+
+    /* ─── Reset & Base ──────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; font-weight: 300; overflow-x: hidden; }
+
+    /* Noise texture */
+    body::before {
+      content: ''; position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 0; opacity: 0.4;
+    }
+
+    /* Grid overlay */
+    body::after {
+      content: ''; position: fixed; inset: 0;
+      background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 60px 60px; pointer-events: none; z-index: 0; opacity: 0.3;
+      mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 30%, transparent 100%);
+    }
+
+    /* ─── Navigation ────────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 clamp(24px, 5vw, 80px); height: 64px;
+      background: rgba(8, 11, 16, 0.85); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--accent); letter-spacing: 0.05em; text-decoration: none; }
+    .nav-links { display: flex; gap: 32px; list-style: none; }
+    .nav-links a { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-muted); text-decoration: none; letter-spacing: 0.08em; text-transform: uppercase; transition: color 0.2s; }
+    .nav-links a:hover, .nav-links a.active { color: var(--accent); }
+    .nav-toggle { display: none; flex-direction: column; gap: 5px; cursor: pointer; background: none; border: none; padding: 4px; }
+    .nav-toggle span { display: block; width: 22px; height: 2px; background: var(--text-muted); }
+
+    /* ─── Page Header ───────────────────────────────────────── */
+    .page-header {
+      position: relative; z-index: 1;
+      padding: 120px clamp(24px, 5vw, 80px) 60px;
+      opacity: 0; animation: fadeUp 0.7s 0.1s forwards;
+    }
+    .page-eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--accent); letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 16px; display: flex; align-items: center; gap: 12px; }
+    .page-eyebrow span { display: inline-block; width: 32px; height: 1px; background: var(--accent); }
+    .page-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(48px, 8vw, 96px); line-height: 0.92; letter-spacing: 0.02em; }
+    .page-title .accent-line { color: var(--accent); text-shadow: 0 0 80px rgba(14, 165, 233, 0.4); }
+
+    /* ─── Main Content ──────────────────────────────────────── */
+    .about-wrapper {
+      position: relative; z-index: 1;
+      padding: 0 clamp(24px, 5vw, 80px) 100px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      max-width: 1200px;
+    }
+
+    /* ─── Story Section (left col) ──────────────────────────── */
+    .story-block {
+      opacity: 0; animation: fadeUp 0.7s 0.2s forwards;
+    }
+    .block-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: var(--accent);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .block-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    /* The hexagon photo repeated smaller on about page */
+    .about-photo-wrap {
+      margin-bottom: 28px;
+    }
+    .hex-sm {
+      width: 120px;
+      aspect-ratio: 1 / 1.15;
+      position: relative;
+    }
+    .hex-sm img {
+      width: 100%; height: 100%;
+      object-fit: cover; object-position: center top;
+      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+      display: block;
+    }
+    .hex-sm::before {
+      content: ''; position: absolute; inset: -3px;
+      background: linear-gradient(135deg, var(--accent), transparent 60%);
+      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+      z-index: -1;
+    }
+
+    /* Story paragraphs */
+    .story-text {
+      font-size: 15px;
+      color: var(--text-muted);
+      line-height: 1.8;
+      font-weight: 300;
+    }
+    .story-text + .story-text { margin-top: 16px; }
+    .story-text strong { color: var(--text); font-weight: 500; }
+
+    /* ─── Right column ──────────────────────────────────────── */
+    .right-col {
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+      opacity: 0;
+      animation: fadeUp 0.7s 0.35s forwards;
+    }
+
+    /* Quick facts card */
+    .facts-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      position: relative; overflow: hidden;
+    }
+    .facts-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--accent), transparent);
+    }
+    .facts-inner { padding: clamp(20px, 3vw, 32px); }
+    .fact-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .fact-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .fact-row:first-child { padding-top: 0; }
+    /* Accent icon/emoji container */
+    .fact-icon {
+      font-size: 18px;
+      line-height: 1;
+      flex-shrink: 0;
+      width: 32px;
+      text-align: center;
+      padding-top: 2px;
+    }
+    .fact-content { flex: 1; }
+    .fact-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: var(--text-dim);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 3px;
+    }
+    .fact-value {
+      font-size: 14px;
+      color: var(--text);
+      font-weight: 400;
+    }
+
+    /* Values / principles card */
+    .values-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      position: relative; overflow: hidden;
+    }
+    .values-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--accent), transparent);
+    }
+    .values-inner { padding: clamp(20px, 3vw, 32px); }
+    .value-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .value-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .value-item:first-child { padding-top: 0; }
+    /* Accent bracket number */
+    .value-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--accent);
+      letter-spacing: 0.08em;
+      flex-shrink: 0;
+      padding-top: 2px;
+    }
+    .value-text { font-size: 14px; color: var(--text-muted); line-height: 1.6; }
+    .value-text strong { color: var(--text); font-weight: 500; }
+
+    /* ─── Full-width currently section ─────────────────────── */
+    .currently-section {
+      position: relative; z-index: 1;
+      padding: 0 clamp(24px, 5vw, 80px) 80px;
+      opacity: 0;
+      animation: fadeUp 0.7s 0.5s forwards;
+    }
+    .currently-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      max-width: 1200px;
+    }
+    .currently-item {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      padding: 24px;
+      transition: border-color 0.2s;
+    }
+    .currently-item:hover { border-color: rgba(14, 165, 233, 0.3); }
+    .currently-cat {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      color: var(--accent);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .currently-val {
+      font-size: 14px;
+      color: var(--text);
+      font-weight: 400;
+      line-height: 1.5;
+    }
+
+    /* ─── Buttons ───────────────────────────────────────────── */
+    .btn-primary { display: inline-flex; align-items: center; gap: 8px; padding: 14px 28px; background: var(--accent); color: #000; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 700; text-decoration: none; letter-spacing: 0.04em; text-transform: uppercase; transition: all 0.2s; clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px)); }
+    .btn-primary:hover { background: var(--accent2); transform: translateY(-2px); box-shadow: 0 8px 30px rgba(14, 165, 233, 0.35); }
+
+    /* ─── Footer ────────────────────────────────────────────── */
+    footer { position: relative; z-index: 1; padding: 32px clamp(24px, 5vw, 80px); border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
+    .footer-name { font-family: 'Bebas Neue', sans-serif; font-size: 18px; color: var(--text-dim); letter-spacing: 0.05em; }
+    .footer-links { display: flex; gap: 24px; }
+    .footer-links a { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-dim); text-decoration: none; letter-spacing: 0.08em; text-transform: uppercase; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--accent); }
+
+    /* ─── Animations ────────────────────────────────────────── */
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes pulse  { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+    /* ─── Responsive ────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      .about-wrapper { grid-template-columns: 1fr; }
+      .currently-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none; position: fixed; top: 64px; left: 0; right: 0;
+        background: rgba(8, 11, 16, 0.97); backdrop-filter: blur(12px);
+        flex-direction: column; gap: 0; border-bottom: 1px solid var(--border); z-index: 99;
+      }
+      .nav-links.open { display: flex; }
+      .nav-links li { border-bottom: 1px solid var(--border); }
+      .nav-links a { display: block; padding: 18px clamp(24px, 5vw, 80px); }
+      .nav-toggle { display: flex; }
+      .currently-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ─── Navigation ──────────────────────────────────────────── -->
+  <nav>
+    <a href="/" class="nav-logo">thepascualsebastian.com</a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="/">Home</a></li>
+      <li><a href="/projects">Projects</a></li>
+      <li><a href="/experience">Experience</a></li>
+      <li><a href="/about" class="active">About</a></li>
+      <li><a href="/contact">Contact</a></li>
+    </ul>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- ─── Page Header ─────────────────────────────────────────── -->
+  <div class="page-header">
+    <p class="page-eyebrow"><span></span>The person behind the code</p>
+    <h1 class="page-title">
+      ABOUT<br>
+      <span class="accent-line">ME</span>
+    </h1>
+  </div>
+
+  <!-- ─── Two-column about content ─────────────────────────────── -->
+  <div class="about-wrapper">
+
+    <!-- Left: Story -->
+    <div class="story-block">
+      <p class="block-label">My Story</p>
+
+      <!-- Small hex photo -->
+      <!-- UPLOAD REQUIRED: IMG_5612.jpg must be in your InfinityFree root -->
+      <div class="about-photo-wrap">
+        <div class="hex-sm">
+          <img src="/IMG_5612.jpg" alt="Pascual Sebastian" />
+        </div>
+      </div>
+
+      <p class="story-text">
+        My path into computer science started in high school, during a summer internship at <strong>T-Mobile</strong>.
+        I watched engineers debug backend systems, coordinate in Jira, and ship fixes that affected real inventory data —
+        and I was hooked. That was the moment I realized I wanted to build things that actually matter.
+      </p>
+
+      <p class="story-text" style="margin-top:16px;">
+        From there I enrolled at <strong>Clemson University</strong> and threw myself into CS — balancing coursework,
+        projects, and internships. At the <strong>Naval Information Warfare Center</strong>, I built an adaptive
+        learning platform that cut military onboarding time from three months to one month. That project taught me
+        what it means to write software with real stakes — real users, real impact.
+      </p>
+
+      <p class="story-text" style="margin-top:16px;">
+        Now I'm a <strong>Data Engineer Intern at InvestiNet</strong>, building the data infrastructure that keeps
+        business operations running. My first project was standardizing the database connection layer across the
+        entire codebase — designing a unified, reusable framework with retry logic, rollback handling, and automated
+        notifications. It's exactly the kind of foundational, high-impact work I love.
+      </p>
+
+      <p class="story-text" style="margin-top:16px;">
+        I'm <strong>bilingual in English and Spanish</strong>, which has shaped how I communicate and collaborate
+        across teams. Whether it's a code review or a whiteboard session, I care about clarity just as much as
+        correctness.
+      </p>
+
+      <!-- CTA to contact -->
+      <div style="margin-top: 36px;">
+        <a href="/contact" class="btn-primary">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          Get In Touch
+        </a>
+      </div>
+    </div>
+
+    <!-- Right: Facts + Values -->
+    <div class="right-col">
+
+      <!-- Quick facts card -->
+      <div class="facts-card">
+        <div class="facts-inner">
+          <p class="block-label" style="margin-bottom:16px;">Quick Facts</p>
+
+          <div class="fact-row">
+            <div class="fact-icon">🎓</div>
+            <div class="fact-content">
+              <div class="fact-label">Education</div>
+              <div class="fact-value">B.S. Computer Science — Clemson University, 3.75 GPA</div>
+            </div>
+          </div>
+
+          <div class="fact-row">
+            <div class="fact-icon">📍</div>
+            <div class="fact-content">
+              <div class="fact-label">Based In</div>
+              <div class="fact-value">South Carolina, USA</div>
+            </div>
+          </div>
+
+          <div class="fact-row">
+            <div class="fact-icon">🗣️</div>
+            <div class="fact-content">
+              <div class="fact-label">Languages</div>
+              <div class="fact-value">English (Fluent) · Spanish (Fluent)</div>
+            </div>
+          </div>
+
+          <div class="fact-row">
+            <div class="fact-icon">🏀</div>
+            <div class="fact-content">
+              <div class="fact-label">NBA Team</div>
+              <div class="fact-value">Los Angeles Lakers — forever</div>
+            </div>
+          </div>
+
+          <div class="fact-row">
+            <div class="fact-icon">🎮</div>
+            <div class="fact-content">
+              <div class="fact-label">Hobbies</div>
+              <div class="fact-value">Video games, building side projects, watching the Lakers lose in the playoffs</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Engineering values card -->
+      <div class="values-card">
+        <div class="values-inner">
+          <p class="block-label" style="margin-bottom:16px;">What I Believe In</p>
+
+          <div class="value-item">
+            <span class="value-num">01</span>
+            <p class="value-text"><strong>Ship things that matter.</strong> The best code solves real problems for real people. I care about the impact, not just the implementation.</p>
+          </div>
+
+          <div class="value-item">
+            <span class="value-num">02</span>
+            <p class="value-text"><strong>Clarity over cleverness.</strong> Code is read far more than it's written. I'd rather write something a teammate can extend than something only I can understand.</p>
+          </div>
+
+          <div class="value-item">
+            <span class="value-num">03</span>
+            <p class="value-text"><strong>Collaboration compounds.</strong> The best outcomes I've seen came from working with people — not around them.</p>
+          </div>
+
+          <div class="value-item">
+            <span class="value-num">04</span>
+            <p class="value-text"><strong>Keep learning.</strong> The stack changes. The fundamentals don't. I stay curious and adapt.</p>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end .right-col -->
+  </div><!-- end .about-wrapper -->
+
+  <!-- ─── Currently Section ────────────────────────────────────── -->
+  <div class="currently-section">
+    <p class="block-label" style="margin-bottom:24px; max-width:1200px;">Currently</p>
+    <div class="currently-grid">
+      <div class="currently-item">
+        <p class="currently-cat">Working On</p>
+        <p class="currently-val">Data pipeline infrastructure at InvestiNet — building a standardized database utility layer in Python + SQL</p>
+      </div>
+      <div class="currently-item">
+        <p class="currently-cat">Playing</p>
+        <p class="currently-val">Marvel Rivals, Rocket League, Apex Legends — always down to talk game recommendations</p>
+      </div>
+      <div class="currently-item">
+        <p class="currently-cat">Watching</p>
+        <p class="currently-val">Lakers games, hoping this is the year — it's always the year</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── Footer ───────────────────────────────────────────────── -->
+  <footer>
+    <span class="footer-name">PASCUAL SEBASTIAN</span>
+    <div class="footer-links">
+      <a href="mailto:pascua9637@gmail.com">Email</a>
+      <a href="https://www.linkedin.com/in/pascualsebastian/" target="_blank">LinkedIn</a>
+      <a href="https://github.com/ThePascualSebastian" target="_blank">GitHub</a>
+    </div>
+  </footer>
+
+  <!-- ─── Mobile Nav Toggle ────────────────────────────────────── -->
+  <script>
+    const toggle = document.getElementById('navToggle');
+    const links  = document.getElementById('navLinks');
+    toggle.addEventListener('click', () => links.classList.toggle('open'));
+    links.querySelectorAll('a').forEach(a => a.addEventListener('click', () => links.classList.remove('open')));
+  </script>
+
+</body>
+</html>

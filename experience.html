@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Experience — Pascual Sebastian</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,300&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+    /* ─── CSS Custom Properties ─────────────────────────────── */
+    :root {
+      --bg:          #080b10;
+      --bg2:         #0d1117;
+      --bg3:         #131920;
+      --border:      #1e2a35;
+      --accent:      #0ea5e9;
+      --accent2:     #38bdf8;
+      --accent-glow: rgba(14, 165, 233, 0.18);
+      --text:        #f0f6fc;
+      --text-muted:  #7a90a4;
+      --text-dim:    #3d5166;
+    }
+
+    /* ─── Reset & Base ──────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; font-weight: 300; overflow-x: hidden; }
+
+    /* Noise texture */
+    body::before {
+      content: ''; position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 0; opacity: 0.4;
+    }
+
+    /* Grid overlay */
+    body::after {
+      content: ''; position: fixed; inset: 0;
+      background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 60px 60px; pointer-events: none; z-index: 0; opacity: 0.3;
+      mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 30%, transparent 100%);
+    }
+
+    /* ─── Navigation ────────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 clamp(24px, 5vw, 80px); height: 64px;
+      background: rgba(8, 11, 16, 0.85); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--accent); letter-spacing: 0.05em; text-decoration: none; }
+    .nav-links { display: flex; gap: 32px; list-style: none; }
+    .nav-links a { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-muted); text-decoration: none; letter-spacing: 0.08em; text-transform: uppercase; transition: color 0.2s; }
+    .nav-links a:hover, .nav-links a.active { color: var(--accent); }
+    .nav-toggle { display: none; flex-direction: column; gap: 5px; cursor: pointer; background: none; border: none; padding: 4px; }
+    .nav-toggle span { display: block; width: 22px; height: 2px; background: var(--text-muted); transition: all 0.3s; }
+
+    /* ─── Page Header ───────────────────────────────────────── */
+    .page-header {
+      position: relative; z-index: 1;
+      padding: 120px clamp(24px, 5vw, 80px) 60px;
+      opacity: 0; animation: fadeUp 0.7s 0.1s forwards;
+    }
+    .page-eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--accent); letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 16px; display: flex; align-items: center; gap: 12px; }
+    .page-eyebrow span { display: inline-block; width: 32px; height: 1px; background: var(--accent); }
+    .page-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(48px, 8vw, 96px); line-height: 0.92; letter-spacing: 0.02em; }
+    .page-title .accent-line { color: var(--accent); text-shadow: 0 0 80px rgba(14, 165, 233, 0.4); }
+    .page-subtitle { margin-top: 20px; font-size: 15px; color: var(--text-muted); max-width: 480px; line-height: 1.7; }
+
+    /* ─── Timeline Container ────────────────────────────────── */
+    .timeline-wrapper {
+      position: relative; z-index: 1;
+      padding: 0 clamp(24px, 5vw, 80px) 100px;
+    }
+
+    /* The vertical connecting line */
+    .timeline {
+      position: relative;
+      max-width: 860px;
+    }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 8px;
+      bottom: 0;
+      width: 1px;
+      background: linear-gradient(to bottom, var(--accent), var(--border) 70%, transparent);
+    }
+
+    /* ─── Individual Timeline Entry ─────────────────────────── */
+    .timeline-entry {
+      position: relative;
+      padding-left: 48px;
+      padding-bottom: 64px;
+      opacity: 0;
+      animation: fadeUp 0.7s forwards;
+    }
+    .timeline-entry:nth-child(1) { animation-delay: 0.2s; }
+    .timeline-entry:nth-child(2) { animation-delay: 0.4s; }
+    .timeline-entry:nth-child(3) { animation-delay: 0.6s; }
+    .timeline-entry:last-child { padding-bottom: 0; }
+
+    /* Dot on the timeline line */
+    .timeline-dot {
+      position: absolute;
+      left: -6px;
+      top: 8px;
+      width: 13px;
+      height: 13px;
+      border-radius: 50%;
+      background: var(--accent);
+      border: 2px solid var(--bg);
+      box-shadow: 0 0 12px rgba(14, 165, 233, 0.6);
+    }
+    /* Dimmer dot for older roles */
+    .timeline-dot.dim {
+      background: var(--text-dim);
+      box-shadow: none;
+    }
+
+    /* The card itself */
+    .timeline-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    .timeline-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--accent), transparent);
+    }
+    .timeline-card:hover {
+      border-color: rgba(14, 165, 233, 0.35);
+      box-shadow: 0 0 40px rgba(14, 165, 233, 0.05);
+    }
+
+    /* Card inner padding */
+    .card-inner { padding: clamp(24px, 4vw, 40px); }
+
+    /* Top meta row: company badge + date */
+    .card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    .company-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: var(--accent);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      background: rgba(14, 165, 233, 0.08);
+      border: 1px solid rgba(14, 165, 233, 0.2);
+      padding: 6px 12px;
+    }
+    /* Pulse dot for current role */
+    .company-badge.current::before {
+      content: '';
+      width: 6px; height: 6px;
+      background: #22c55e;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    .date-range {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--text-dim);
+      letter-spacing: 0.08em;
+      white-space: nowrap;
+      padding-top: 2px;
+    }
+
+    /* Role title */
+    .role-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(28px, 4vw, 44px);
+      line-height: 1;
+      letter-spacing: 0.02em;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+    .role-company {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--accent);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    /* Bullet list of accomplishments */
+    .role-bullets {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+    .role-bullets li {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.65;
+      padding-left: 20px;
+      position: relative;
+    }
+    /* Custom accent bullet */
+    .role-bullets li::before {
+      content: '▸';
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      font-size: 12px;
+      top: 1px;
+    }
+    .role-bullets li strong { color: var(--text); font-weight: 500; }
+
+    /* Tech chips row */
+    .role-tech { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tech-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--text-muted);
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      padding: 5px 10px;
+      letter-spacing: 0.05em;
+    }
+
+    /* ─── Education Block ───────────────────────────────────── */
+    .education-section {
+      position: relative; z-index: 1;
+      padding: 0 clamp(24px, 5vw, 80px) 80px;
+    }
+    .section-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--accent);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 32px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); max-width: 200px; }
+
+    .edu-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      padding: clamp(24px, 4vw, 40px);
+      max-width: 860px;
+      position: relative;
+      overflow: hidden;
+    }
+    .edu-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--accent), transparent);
+    }
+    .edu-school {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(28px, 4vw, 44px);
+      line-height: 1;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+    .edu-degree {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+    .edu-meta { display: flex; gap: 24px; flex-wrap: wrap; }
+    .edu-stat { }
+    .edu-stat-number {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 32px;
+      color: var(--accent);
+      line-height: 1;
+    }
+    .edu-stat-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: var(--text-dim);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+    .edu-divider { width: 1px; background: var(--border); align-self: stretch; }
+    .edu-honors {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.7;
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+    }
+    .edu-honors strong { color: var(--text); font-weight: 500; }
+
+    /* ─── Footer ────────────────────────────────────────────── */
+    footer { position: relative; z-index: 1; padding: 32px clamp(24px, 5vw, 80px); border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
+    .footer-name { font-family: 'Bebas Neue', sans-serif; font-size: 18px; color: var(--text-dim); letter-spacing: 0.05em; }
+    .footer-links { display: flex; gap: 24px; }
+    .footer-links a { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-dim); text-decoration: none; letter-spacing: 0.08em; text-transform: uppercase; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--accent); }
+
+    /* ─── Animations ────────────────────────────────────────── */
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+    /* ─── Responsive ────────────────────────────────────────── */
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none; position: fixed; top: 64px; left: 0; right: 0;
+        background: rgba(8, 11, 16, 0.97); backdrop-filter: blur(12px);
+        flex-direction: column; gap: 0; border-bottom: 1px solid var(--border); z-index: 99;
+      }
+      .nav-links.open { display: flex; }
+      .nav-links li { border-bottom: 1px solid var(--border); }
+      .nav-links a { display: block; padding: 18px clamp(24px, 5vw, 80px); }
+      .nav-toggle { display: flex; }
+      .card-top { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ─── Navigation ──────────────────────────────────────────── -->
+  <nav>
+    <a href="/" class="nav-logo">thepascualsebastian.com</a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="/">Home</a></li>
+      <li><a href="/projects">Projects</a></li>
+      <li><a href="/experience" class="active">Experience</a></li>
+      <li><a href="/about">About</a></li>
+      <li><a href="/contact">Contact</a></li>
+    </ul>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- ─── Page Header ─────────────────────────────────────────── -->
+  <div class="page-header">
+    <p class="page-eyebrow"><span></span>Where I've worked</p>
+    <h1 class="page-title">
+      WORK<br>
+      <span class="accent-line">EXPERIENCE</span>
+    </h1>
+    <p class="page-subtitle">
+      Three internships across defense, telecom, and fintech — each one teaching me something different about building software that matters.
+    </p>
+  </div>
+
+  <!-- ─── Timeline ────────────────────────────────────────────── -->
+  <div class="timeline-wrapper">
+    <div class="timeline">
+
+      <!-- ── Entry 1: InvestiNet (Current) ── -->
+      <div class="timeline-entry">
+        <!-- Bright glowing dot = current role -->
+        <div class="timeline-dot"></div>
+
+        <div class="timeline-card">
+          <div class="card-inner">
+            <div class="card-top">
+              <!-- "current" class adds green pulse dot -->
+              <span class="company-badge current">InvestiNet · Current</span>
+              <span class="date-range">May 2026 — August 2026</span>
+            </div>
+
+            <h2 class="role-title">Data Engineer Intern</h2>
+            <p class="role-company">InvestiNet</p>
+
+            <ul class="role-bullets">
+              <li>Automating and optimizing <strong>database workflows</strong> to improve data pipeline efficiency, reliability, and overall system performance.</li>
+              <li>Collaborating with engineering teams to design and implement <strong>scalable data solutions</strong> supporting core business operations.</li>
+              <li>Utilizing <strong>Python and SQL</strong> to streamline data ingestion, transformation, validation, and reporting processes.</li>
+              <li>Developing a <strong>standardized database connection utility</strong> by consolidating multiple query functions into a unified, reusable framework.</li>
+              <li>Implementing <strong>retry logic, autocommit handling, rollback functionality, error validation, and automated email notifications</strong> to improve system resilience, maintainability, and operational efficiency across the codebase.</li>
+            </ul>
+
+            <div class="role-tech">
+              <span class="tech-tag">Python</span>
+              <span class="tech-tag">SQL</span>
+              <span class="tech-tag">dbForge</span>
+              <span class="tech-tag">MySQL</span>
+              <span class="tech-tag">Data Pipelines</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Entry 2: Naval Information Warfare Center ── -->
+      <div class="timeline-entry">
+        <div class="timeline-dot dim"></div>
+
+        <div class="timeline-card">
+          <div class="card-inner">
+            <div class="card-top">
+              <span class="company-badge">NIWC · Atlantic</span>
+              <span class="date-range">March 2025 — December 2025</span>
+            </div>
+
+            <h2 class="role-title">Software Development Intern</h2>
+            <p class="role-company">Naval Information Warfare Center — Atlantic</p>
+
+            <ul class="role-bullets">
+              <li>Developed a functional prototype of an <strong>adaptive learning platform</strong> using TypeScript, React.js, and Tailwind CSS to deliver personalized training for military and federal employees.</li>
+              <li>Designed <strong>responsive, user-friendly frontend interfaces</strong> to improve usability and content accessibility.</li>
+              <li>Implemented <strong>AI-driven content recommendations</strong> using AWS Bedrock with learning materials stored in S3 and DynamoDB, reducing onboarding time from three months to one month.</li>
+            </ul>
+
+            <div class="role-tech">
+              <span class="tech-tag">TypeScript</span>
+              <span class="tech-tag">React.js</span>
+              <span class="tech-tag">Tailwind CSS</span>
+              <span class="tech-tag">AWS Bedrock</span>
+              <span class="tech-tag">DynamoDB</span>
+              <span class="tech-tag">S3</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Entry 3: T-Mobile ── -->
+      <div class="timeline-entry">
+        <div class="timeline-dot dim"></div>
+
+        <div class="timeline-card">
+          <div class="card-inner">
+            <div class="card-top">
+              <span class="company-badge">T-Mobile</span>
+              <span class="date-range">June 2021 — August 2021</span>
+            </div>
+
+            <h2 class="role-title">Retail Inventory Serialization Intern</h2>
+            <p class="role-company">T-Mobile</p>
+
+            <ul class="role-bullets">
+              <li>Resolved <strong>backend issues using Jira</strong>, collaborating with senior developers to ensure system stability.</li>
+              <li>Maintained programs to <strong>track device status</strong>, improving the accuracy of inventory for added, sold, and missing devices.</li>
+              <li>Engaged in <strong>technical workshops and meetings</strong>, supporting solution design and implementation.</li>
+            </ul>
+
+            <div class="role-tech">
+              <span class="tech-tag">Jira</span>
+              <span class="tech-tag">Bitbucket</span>
+              <span class="tech-tag">Inventory Systems</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end .timeline -->
+  </div><!-- end .timeline-wrapper -->
+
+  <!-- ─── Education ────────────────────────────────────────────── -->
+  <div class="education-section">
+    <p class="section-label">Education</p>
+
+    <div class="edu-card">
+      <h2 class="edu-school">Clemson University</h2>
+      <p class="edu-degree">B.S. in Computer Science · May 2026</p>
+
+      <div class="edu-meta">
+        <div class="edu-stat">
+          <div class="edu-stat-number">3.75</div>
+          <div class="edu-stat-label">GPA</div>
+        </div>
+        <div class="edu-divider"></div>
+        <div class="edu-stat">
+          <div class="edu-stat-number">4×</div>
+          <div class="edu-stat-label">Dean's / President's List</div>
+        </div>
+        <div class="edu-divider"></div>
+        <div class="edu-stat">
+          <div class="edu-stat-number">EN/ES</div>
+          <div class="edu-stat-label">Bilingual</div>
+        </div>
+      </div>
+
+      <p class="edu-honors">
+        <strong>President's List:</strong> Fall 2025, Spring 2024, Fall 2024 &nbsp;·&nbsp;
+        <strong>Dean's List:</strong> Spring 2025
+      </p>
+    </div>
+  </div>
+
+  <!-- ─── Footer ───────────────────────────────────────────────── -->
+  <footer>
+    <span class="footer-name">PASCUAL SEBASTIAN</span>
+    <div class="footer-links">
+      <a href="mailto:pascua9637@gmail.com">Email</a>
+      <a href="https://www.linkedin.com/in/pascualsebastian/" target="_blank">LinkedIn</a>
+      <a href="https://github.com/ThePascualSebastian" target="_blank">GitHub</a>
+    </div>
+  </footer>
+
+  <!-- ─── Mobile Nav Toggle ────────────────────────────────────── -->
+  <script>
+    const toggle = document.getElementById('navToggle');
+    const links  = document.getElementById('navLinks');
+    toggle.addEventListener('click', () => links.classList.toggle('open'));
+    links.querySelectorAll('a').forEach(a => a.addEventListener('click', () => links.classList.remove('open')));
+  </script>
+
+</body>
+</html>
