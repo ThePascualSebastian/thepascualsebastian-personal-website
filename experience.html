@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Experience — Pascual Sebastian</title>
 
-  <!-- Favicon -->
+  <!-- Favicon: upload favicon.svg to InfinityFree root -->
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
   <!-- Google Fonts -->
@@ -31,9 +31,13 @@
     /* ─── Reset & Base ──────────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
-    body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; font-weight: 300; overflow-x: hidden; }
+    html, body { overflow-x: hidden; }
+    body {
+      background: var(--bg); color: var(--text);
+      font-family: 'DM Sans', sans-serif; font-weight: 300; min-width: 0;
+    }
 
-    /* Noise texture */
+    /* Noise texture overlay */
     body::before {
       content: ''; position: fixed; inset: 0;
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
@@ -43,8 +47,11 @@
     /* Grid overlay */
     body::after {
       content: ''; position: fixed; inset: 0;
-      background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px);
-      background-size: 60px 60px; pointer-events: none; z-index: 0; opacity: 0.3;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none; z-index: 0; opacity: 0.3;
       mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 30%, transparent 100%);
     }
 
@@ -56,264 +63,283 @@
       background: rgba(8, 11, 16, 0.85); backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
     }
-    .nav-logo { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--accent); letter-spacing: 0.05em; text-decoration: none; }
+    .nav-logo {
+      font-family: 'JetBrains Mono', monospace; font-size: 13px;
+      color: var(--accent); letter-spacing: 0.05em; text-decoration: none; flex-shrink: 0;
+    }
     .nav-links { display: flex; gap: 32px; list-style: none; }
-    .nav-links a { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-muted); text-decoration: none; letter-spacing: 0.08em; text-transform: uppercase; transition: color 0.2s; }
+    .nav-links a {
+      font-family: 'JetBrains Mono', monospace; font-size: 12px;
+      color: var(--text-muted); text-decoration: none;
+      letter-spacing: 0.08em; text-transform: uppercase; transition: color 0.2s;
+    }
     .nav-links a:hover, .nav-links a.active { color: var(--accent); }
-    .nav-toggle { display: none; flex-direction: column; gap: 5px; cursor: pointer; background: none; border: none; padding: 4px; }
-    .nav-toggle span { display: block; width: 22px; height: 2px; background: var(--text-muted); transition: all 0.3s; }
+    .nav-toggle {
+      display: none; flex-direction: column; gap: 5px;
+      cursor: pointer; background: none; border: none; padding: 4px;
+    }
+    .nav-toggle span { display: block; width: 22px; height: 2px; background: var(--text-muted); }
 
     /* ─── Page Header ───────────────────────────────────────── */
     .page-header {
       position: relative; z-index: 1;
       padding: 120px clamp(24px, 5vw, 80px) 60px;
-      opacity: 0; animation: fadeUp 0.7s 0.1s forwards;
+      opacity: 0; animation: fadeUp 0.7s 0.1s forwards; max-width: 100%;
     }
-    .page-eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--accent); letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 16px; display: flex; align-items: center; gap: 12px; }
-    .page-eyebrow span { display: inline-block; width: 32px; height: 1px; background: var(--accent); }
-    .page-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(48px, 8vw, 96px); line-height: 0.92; letter-spacing: 0.02em; }
+    .page-eyebrow {
+      font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--accent);
+      letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 16px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .page-eyebrow span { display: inline-block; width: 32px; height: 1px; background: var(--accent); flex-shrink: 0; }
+    .page-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(48px, 8vw, 96px); line-height: 0.92; letter-spacing: 0.02em;
+    }
     .page-title .accent-line { color: var(--accent); text-shadow: 0 0 80px rgba(14, 165, 233, 0.4); }
     .page-subtitle { margin-top: 20px; font-size: 15px; color: var(--text-muted); max-width: 480px; line-height: 1.7; }
 
-    /* ─── Timeline Container ────────────────────────────────── */
+    /* ─── Timeline ──────────────────────────────────────────── */
     .timeline-wrapper {
       position: relative; z-index: 1;
-      padding: 0 clamp(24px, 5vw, 80px) 100px;
+      padding: 0 clamp(24px, 5vw, 80px) 80px;
+      width: 100%; box-sizing: border-box;
     }
+    .timeline { position: relative; max-width: 820px; width: 100%; }
 
-    /* The vertical connecting line */
-    .timeline {
-      position: relative;
-      max-width: 860px;
-    }
+    /* Vertical connecting line */
     .timeline::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 8px;
-      bottom: 0;
-      width: 1px;
+      content: ''; position: absolute; left: 0; top: 8px; bottom: 0; width: 1px;
       background: linear-gradient(to bottom, var(--accent), var(--border) 70%, transparent);
     }
 
-    /* ─── Individual Timeline Entry ─────────────────────────── */
+    /* ─── Timeline Entry ────────────────────────────────────── */
     .timeline-entry {
-      position: relative;
-      padding-left: 48px;
-      padding-bottom: 64px;
-      opacity: 0;
-      animation: fadeUp 0.7s forwards;
+      position: relative; padding-left: 48px; padding-bottom: 56px;
+      opacity: 0; animation: fadeUp 0.7s forwards;
     }
     .timeline-entry:nth-child(1) { animation-delay: 0.2s; }
     .timeline-entry:nth-child(2) { animation-delay: 0.4s; }
     .timeline-entry:nth-child(3) { animation-delay: 0.6s; }
-    .timeline-entry:last-child { padding-bottom: 0; }
+    .timeline-entry:last-child   { padding-bottom: 0; }
 
-    /* Dot on the timeline line */
+    /* Dot */
     .timeline-dot {
-      position: absolute;
-      left: -6px;
-      top: 8px;
-      width: 13px;
-      height: 13px;
-      border-radius: 50%;
-      background: var(--accent);
-      border: 2px solid var(--bg);
+      position: absolute; left: -6px; top: 10px;
+      width: 13px; height: 13px; border-radius: 50%;
+      background: var(--accent); border: 2px solid var(--bg);
       box-shadow: 0 0 12px rgba(14, 165, 233, 0.6);
     }
-    /* Dimmer dot for older roles */
-    .timeline-dot.dim {
-      background: var(--text-dim);
-      box-shadow: none;
-    }
+    .timeline-dot.dim { background: var(--text-dim); box-shadow: none; }
 
-    /* The card itself */
+    /* Card */
     .timeline-card {
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      position: relative;
-      overflow: hidden;
+      background: var(--bg2); border: 1px solid var(--border);
+      position: relative; overflow: hidden;
       transition: border-color 0.3s, box-shadow 0.3s;
     }
     .timeline-card::before {
-      content: '';
-      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
       background: linear-gradient(90deg, var(--accent), transparent);
     }
-    .timeline-card:hover {
-      border-color: rgba(14, 165, 233, 0.35);
-      box-shadow: 0 0 40px rgba(14, 165, 233, 0.05);
-    }
+    .timeline-card:hover { border-color: rgba(14, 165, 233, 0.35); box-shadow: 0 0 40px rgba(14, 165, 233, 0.05); }
 
-    /* Card inner padding */
-    .card-inner { padding: clamp(24px, 4vw, 40px); }
+    .card-inner { padding: clamp(24px, 4vw, 36px); }
 
-    /* Top meta row: company badge + date */
+    /* ─── Card Top: logo placeholder + badge + date ──────────── */
     .card-top {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 16px;
-      flex-wrap: wrap;
-      margin-bottom: 20px;
-    }
-    .company-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 10px;
-      color: var(--accent);
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      background: rgba(14, 165, 233, 0.08);
-      border: 1px solid rgba(14, 165, 233, 0.2);
-      padding: 6px 12px;
-    }
-    /* Pulse dot for current role */
-    .company-badge.current::before {
-      content: '';
-      width: 6px; height: 6px;
-      background: #22c55e;
-      border-radius: 50%;
-      animation: pulse 2s infinite;
-    }
-    .date-range {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
-      color: var(--text-dim);
-      letter-spacing: 0.08em;
-      white-space: nowrap;
-      padding-top: 2px;
+      display: flex; align-items: center; gap: 14px;
+      flex-wrap: wrap; margin-bottom: 20px;
     }
 
-    /* Role title */
-    .role-title {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: clamp(28px, 4vw, 44px);
-      line-height: 1;
-      letter-spacing: 0.02em;
-      color: var(--text);
-      margin-bottom: 6px;
-    }
-    .role-company {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 12px;
-      color: var(--accent);
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      margin-bottom: 20px;
-    }
-
-    /* Bullet list of accomplishments */
-    .role-bullets {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-bottom: 24px;
-    }
-    .role-bullets li {
-      font-size: 14px;
-      color: var(--text-muted);
-      line-height: 1.65;
-      padding-left: 20px;
+    /*
+      Logo placeholder — rounded square, like an app icon.
+      When you have a transparent PNG, replace the background-image
+      src below with your uploaded file path, e.g. /investinet-logo.png
+      and remove the dashed border + inner label.
+    */
+    .logo-placeholder {
+      width: 44px; height: 44px; flex-shrink: 0;
+      border-radius: 10px;                    /* rounded square */
+      border: 1px dashed var(--border);
+      background: var(--bg3);
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
       position: relative;
     }
-    /* Custom accent bullet */
-    .role-bullets li::before {
-      content: '▸';
-      position: absolute;
-      left: 0;
-      color: var(--accent);
-      font-size: 12px;
-      top: 1px;
+
+    /* When a real logo image is present inside, hide the fallback icon */
+    .logo-placeholder img {
+      width: 100%; height: 100%;
+      object-fit: contain;
+      border-radius: 8px;
     }
+
+    /* Fallback icon shown when no image is inside */
+    .logo-placeholder .placeholder-icon {
+      color: var(--text-dim);
+    }
+
+    /* Company badge */
+    .company-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-family: 'JetBrains Mono', monospace; font-size: 10px;
+      color: var(--accent); letter-spacing: 0.15em; text-transform: uppercase;
+      background: rgba(14, 165, 233, 0.08); border: 1px solid rgba(14, 165, 233, 0.2);
+      padding: 6px 12px;
+    }
+    .company-badge.current::before {
+      content: ''; width: 6px; height: 6px; background: #22c55e;
+      border-radius: 50%; animation: pulse 2s infinite;
+    }
+
+    /* Date pushed right on desktop */
+    .date-range {
+      font-family: 'JetBrains Mono', monospace; font-size: 11px;
+      color: var(--text-dim); letter-spacing: 0.08em;
+      white-space: nowrap; margin-left: auto;
+    }
+
+    /* Role */
+    .role-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(26px, 3.5vw, 40px); line-height: 1;
+      letter-spacing: 0.02em; color: var(--text); margin-bottom: 4px;
+    }
+    .role-company {
+      font-family: 'JetBrains Mono', monospace; font-size: 12px;
+      color: var(--accent); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 18px;
+    }
+
+    /* Bullet list */
+    .role-bullets { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-bottom: 22px; }
+    .role-bullets li { font-size: 14px; color: var(--text-muted); line-height: 1.65; padding-left: 20px; position: relative; }
+    .role-bullets li::before { content: '▸'; position: absolute; left: 0; color: var(--accent); font-size: 12px; top: 1px; }
     .role-bullets li strong { color: var(--text); font-weight: 500; }
 
-    /* Tech chips row */
+    /* Tech chips */
     .role-tech { display: flex; flex-wrap: wrap; gap: 8px; }
     .tech-tag {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
-      color: var(--text-muted);
-      background: var(--bg3);
-      border: 1px solid var(--border);
-      padding: 5px 10px;
-      letter-spacing: 0.05em;
+      font-family: 'JetBrains Mono', monospace; font-size: 11px;
+      color: var(--text-muted); background: var(--bg3);
+      border: 1px solid var(--border); padding: 5px 10px; letter-spacing: 0.05em;
     }
 
-    /* ─── Education Block ───────────────────────────────────── */
+    /* ─── Education Section ─────────────────────────────────── */
     .education-section {
       position: relative; z-index: 1;
-      padding: 0 clamp(24px, 5vw, 80px) 80px;
+      padding: 0 clamp(24px, 5vw, 80px) 60px;
     }
     .section-label {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
-      color: var(--accent);
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      margin-bottom: 32px;
-      display: flex;
-      align-items: center;
-      gap: 16px;
+      font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--accent);
+      letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 32px;
+      display: flex; align-items: center; gap: 16px;
     }
     .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); max-width: 200px; }
 
     .edu-card {
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      padding: clamp(24px, 4vw, 40px);
-      max-width: 860px;
-      position: relative;
-      overflow: hidden;
+      background: var(--bg2); border: 1px solid var(--border);
+      padding: clamp(24px, 4vw, 36px); max-width: 820px;
+      position: relative; overflow: hidden;
     }
     .edu-card::before {
       content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
       background: linear-gradient(90deg, var(--accent), transparent);
     }
-    .edu-school {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: clamp(28px, 4vw, 44px);
-      line-height: 1;
-      color: var(--text);
-      margin-bottom: 6px;
-    }
+
+    /* Clemson header: paw + school name */
+    .edu-header { display: flex; align-items: center; gap: 14px; margin-bottom: 6px; flex-wrap: wrap; }
+    .edu-school { font-family: 'Bebas Neue', sans-serif; font-size: clamp(26px, 4vw, 40px); line-height: 1; color: var(--text); }
+    .clemson-paw { width: 36px; height: 36px; flex-shrink: 0; }
+
     .edu-degree {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 12px;
-      color: var(--accent);
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
+      font-family: 'JetBrains Mono', monospace; font-size: 12px;
+      color: var(--accent); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 20px;
+    }
+    .edu-meta { display: flex; gap: 24px; flex-wrap: wrap; align-items: flex-start; }
+    .edu-stat-number { font-family: 'Bebas Neue', sans-serif; font-size: 32px; color: var(--accent); line-height: 1; }
+    .edu-stat-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-dim); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 2px; }
+    .edu-divider { width: 1px; background: var(--border); align-self: stretch; }
+    .edu-honors { font-size: 13px; color: var(--text-muted); line-height: 1.7; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border); }
+    .edu-honors strong { color: var(--text); font-weight: 500; }
+
+    /* ─── Resume Viewer Section ─────────────────────────────── */
+    .resume-section {
+      position: relative; z-index: 1;
+      padding: 0 clamp(24px, 5vw, 80px) 80px;
+    }
+
+    .resume-card {
+      background: var(--bg2); border: 1px solid var(--border);
+      max-width: 820px; position: relative; overflow: hidden;
+    }
+    /* Top accent line */
+    .resume-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--accent), transparent);
+    }
+
+    /* Header row inside resume card */
+    .resume-card-header {
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 12px;
+      padding: clamp(20px, 3vw, 32px) clamp(20px, 3vw, 32px) 0;
       margin-bottom: 20px;
     }
-    .edu-meta { display: flex; gap: 24px; flex-wrap: wrap; }
-    .edu-stat { }
-    .edu-stat-number {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 32px;
-      color: var(--accent);
-      line-height: 1;
+    .resume-card-title {
+      font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--accent);
+      letter-spacing: 0.2em; text-transform: uppercase; display: flex; align-items: center; gap: 10px;
     }
-    .edu-stat-label {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 10px;
-      color: var(--text-dim);
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      margin-top: 2px;
+    .resume-card-title::before {
+      content: ''; width: 8px; height: 8px; background: var(--accent);
+      border-radius: 1px; flex-shrink: 0;
     }
-    .edu-divider { width: 1px; background: var(--border); align-self: stretch; }
-    .edu-honors {
-      font-size: 13px;
-      color: var(--text-muted);
-      line-height: 1.7;
-      margin-top: 20px;
-      padding-top: 20px;
-      border-top: 1px solid var(--border);
+
+    /* Download button inside the card */
+    .btn-download {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 10px 20px;
+      background: transparent; color: var(--accent);
+      font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600;
+      text-decoration: none; letter-spacing: 0.04em; text-transform: uppercase;
+      border: 1px solid rgba(14, 165, 233, 0.4);
+      transition: all 0.2s;
     }
-    .edu-honors strong { color: var(--text); font-weight: 500; }
+    .btn-download:hover { background: var(--accent-glow); border-color: var(--accent); transform: translateY(-1px); }
+
+    /*
+      PDF iframe embed.
+      UPLOAD: place Pascual_Sebastian_Resume.pdf in your InfinityFree root.
+      The iframe src points to that file. On mobile, browser may open
+      in a new tab instead of embedding — the download button is the fallback.
+    */
+    .resume-iframe-wrap {
+      padding: 0 clamp(20px, 3vw, 32px) clamp(20px, 3vw, 32px);
+    }
+    .resume-iframe {
+      width: 100%;
+      height: 700px;            /* tall enough to show ~1 full page */
+      border: 1px solid var(--border);
+      background: #fff;         /* PDF renders on white */
+      display: block;
+    }
+
+    /* Mobile fallback: hide iframe on small screens (most mobile browsers
+       don't embed PDFs well) and show a download prompt instead */
+    .resume-mobile-fallback {
+      display: none;
+      padding: 32px;
+      text-align: center;
+      border: 1px solid var(--border);
+      margin: 0 clamp(20px, 3vw, 32px) clamp(20px, 3vw, 32px);
+    }
+    .resume-mobile-fallback p {
+      font-size: 14px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.6;
+    }
+
+    /* ─── Buttons ───────────────────────────────────────────── */
+    .btn-primary { display: inline-flex; align-items: center; gap: 8px; padding: 14px 28px; background: var(--accent); color: #000; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 700; text-decoration: none; letter-spacing: 0.04em; text-transform: uppercase; transition: all 0.2s; clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px)); }
+    .btn-primary:hover { background: var(--accent2); transform: translateY(-2px); box-shadow: 0 8px 30px rgba(14, 165, 233, 0.35); }
 
     /* ─── Footer ────────────────────────────────────────────── */
     footer { position: relative; z-index: 1; padding: 32px clamp(24px, 5vw, 80px); border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
@@ -324,20 +350,21 @@
 
     /* ─── Animations ────────────────────────────────────────── */
     @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+    @keyframes pulse  { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 
     /* ─── Responsive ────────────────────────────────────────── */
     @media (max-width: 768px) {
-      .nav-links {
-        display: none; position: fixed; top: 64px; left: 0; right: 0;
-        background: rgba(8, 11, 16, 0.97); backdrop-filter: blur(12px);
-        flex-direction: column; gap: 0; border-bottom: 1px solid var(--border); z-index: 99;
-      }
+      /* Collapse nav */
+      .nav-links { display: none; position: fixed; top: 64px; left: 0; right: 0; background: rgba(8, 11, 16, 0.97); backdrop-filter: blur(12px); flex-direction: column; gap: 0; border-bottom: 1px solid var(--border); z-index: 99; }
       .nav-links.open { display: flex; }
       .nav-links li { border-bottom: 1px solid var(--border); }
       .nav-links a { display: block; padding: 18px clamp(24px, 5vw, 80px); }
       .nav-toggle { display: flex; }
-      .card-top { flex-direction: column; }
+      /* Date doesn't need to be pushed right on mobile */
+      .date-range { margin-left: 0; }
+      /* Hide iframe on mobile, show download fallback instead */
+      .resume-iframe { display: none; }
+      .resume-mobile-fallback { display: block; }
     }
   </style>
 </head>
@@ -361,43 +388,51 @@
   <!-- ─── Page Header ─────────────────────────────────────────── -->
   <div class="page-header">
     <p class="page-eyebrow"><span></span>Where I've worked</p>
-    <h1 class="page-title">
-      WORK<br>
-      <span class="accent-line">EXPERIENCE</span>
-    </h1>
-    <p class="page-subtitle">
-      Three internships across defense, telecom, and fintech — each one teaching me something different about building software that matters.
-    </p>
+    <h1 class="page-title">WORK<br><span class="accent-line">EXPERIENCE</span></h1>
+    <p class="page-subtitle">Three internships across defense, telecom, and fintech — each one teaching me something different about building software that matters.</p>
   </div>
 
   <!-- ─── Timeline ────────────────────────────────────────────── -->
   <div class="timeline-wrapper">
     <div class="timeline">
 
-      <!-- ── Entry 1: InvestiNet (Current) ── -->
+      <!-- ══ Entry 1: InvestiNet ══ -->
       <div class="timeline-entry">
-        <!-- Bright glowing dot = current role -->
-        <div class="timeline-dot"></div>
-
+        <div class="timeline-dot"></div><!-- bright dot = current role -->
         <div class="timeline-card">
           <div class="card-inner">
             <div class="card-top">
-              <!-- "current" class adds green pulse dot -->
+
+              <!--
+                LOGO PLACEHOLDER — InvestiNet
+                When you have your transparent PNG ready:
+                  1. Upload it to InfinityFree root as: investinet-logo.png
+                  2. Replace this entire .logo-placeholder div with:
+                     <div class="logo-placeholder">
+                       <img src="/investinet-logo.png" alt="InvestiNet" />
+                     </div>
+              -->
+              <div class="logo-placeholder" title="Add investinet-logo.png to InfinityFree">
+                <svg class="placeholder-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <rect x="3" y="3" width="18" height="18" rx="2"/>
+                  <line x1="12" y1="8" x2="12" y2="16"/>
+                  <line x1="8" y1="12" x2="16" y2="12"/>
+                </svg>
+              </div>
+
               <span class="company-badge current">InvestiNet · Current</span>
-              <span class="date-range">May 2026 — August 2026</span>
+              <span class="date-range">May 2026 — Aug 2026</span>
             </div>
 
             <h2 class="role-title">Data Engineer Intern</h2>
             <p class="role-company">InvestiNet</p>
-
             <ul class="role-bullets">
               <li>Automating and optimizing <strong>database workflows</strong> to improve data pipeline efficiency, reliability, and overall system performance.</li>
               <li>Collaborating with engineering teams to design and implement <strong>scalable data solutions</strong> supporting core business operations.</li>
               <li>Utilizing <strong>Python and SQL</strong> to streamline data ingestion, transformation, validation, and reporting processes.</li>
               <li>Developing a <strong>standardized database connection utility</strong> by consolidating multiple query functions into a unified, reusable framework.</li>
-              <li>Implementing <strong>retry logic, autocommit handling, rollback functionality, error validation, and automated email notifications</strong> to improve system resilience, maintainability, and operational efficiency across the codebase.</li>
+              <li>Implementing <strong>retry logic, autocommit handling, rollback functionality, error validation, and automated email notifications</strong> to improve system resilience and operational efficiency across the codebase.</li>
             </ul>
-
             <div class="role-tech">
               <span class="tech-tag">Python</span>
               <span class="tech-tag">SQL</span>
@@ -409,26 +444,41 @@
         </div>
       </div>
 
-      <!-- ── Entry 2: Naval Information Warfare Center ── -->
+      <!-- ══ Entry 2: NIWC ══ -->
       <div class="timeline-entry">
         <div class="timeline-dot dim"></div>
-
         <div class="timeline-card">
           <div class="card-inner">
             <div class="card-top">
+
+              <!--
+                LOGO PLACEHOLDER — NIWC
+                When you have your transparent PNG ready:
+                  1. Upload to InfinityFree root as: niwc-logo.png
+                  2. Replace this block with:
+                     <div class="logo-placeholder">
+                       <img src="/niwc-logo.png" alt="NIWC Atlantic" />
+                     </div>
+              -->
+              <div class="logo-placeholder" title="Add niwc-logo.png to InfinityFree">
+                <svg class="placeholder-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <rect x="3" y="3" width="18" height="18" rx="2"/>
+                  <line x1="12" y1="8" x2="12" y2="16"/>
+                  <line x1="8" y1="12" x2="16" y2="12"/>
+                </svg>
+              </div>
+
               <span class="company-badge">NIWC · Atlantic</span>
-              <span class="date-range">March 2025 — December 2025</span>
+              <span class="date-range">Mar 2025 — Dec 2025</span>
             </div>
 
             <h2 class="role-title">Software Development Intern</h2>
             <p class="role-company">Naval Information Warfare Center — Atlantic</p>
-
             <ul class="role-bullets">
               <li>Developed a functional prototype of an <strong>adaptive learning platform</strong> using TypeScript, React.js, and Tailwind CSS to deliver personalized training for military and federal employees.</li>
               <li>Designed <strong>responsive, user-friendly frontend interfaces</strong> to improve usability and content accessibility.</li>
-              <li>Implemented <strong>AI-driven content recommendations</strong> using AWS Bedrock with learning materials stored in S3 and DynamoDB, reducing onboarding time from three months to one month.</li>
+              <li>Implemented <strong>AI-driven content recommendations</strong> using AWS Bedrock with learning materials stored in S3 and DynamoDB, <strong>reducing onboarding time from 3 months to 1 month</strong>.</li>
             </ul>
-
             <div class="role-tech">
               <span class="tech-tag">TypeScript</span>
               <span class="tech-tag">React.js</span>
@@ -441,26 +491,41 @@
         </div>
       </div>
 
-      <!-- ── Entry 3: T-Mobile ── -->
+      <!-- ══ Entry 3: T-Mobile ══ -->
       <div class="timeline-entry">
         <div class="timeline-dot dim"></div>
-
         <div class="timeline-card">
           <div class="card-inner">
             <div class="card-top">
+
+              <!--
+                LOGO PLACEHOLDER — T-Mobile
+                When you have your transparent PNG ready:
+                  1. Upload to InfinityFree root as: tmobile-logo.png
+                  2. Replace this block with:
+                     <div class="logo-placeholder">
+                       <img src="/tmobile-logo.png" alt="T-Mobile" />
+                     </div>
+              -->
+              <div class="logo-placeholder" title="Add tmobile-logo.png to InfinityFree">
+                <svg class="placeholder-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <rect x="3" y="3" width="18" height="18" rx="2"/>
+                  <line x1="12" y1="8" x2="12" y2="16"/>
+                  <line x1="8" y1="12" x2="16" y2="12"/>
+                </svg>
+              </div>
+
               <span class="company-badge">T-Mobile</span>
-              <span class="date-range">June 2021 — August 2021</span>
+              <span class="date-range">Jun 2021 — Aug 2021</span>
             </div>
 
             <h2 class="role-title">Retail Inventory Serialization Intern</h2>
             <p class="role-company">T-Mobile</p>
-
             <ul class="role-bullets">
               <li>Resolved <strong>backend issues using Jira</strong>, collaborating with senior developers to ensure system stability.</li>
-              <li>Maintained programs to <strong>track device status</strong>, improving the accuracy of inventory for added, sold, and missing devices.</li>
+              <li>Maintained programs to <strong>track device status</strong>, improving accuracy of inventory for added, sold, and missing devices.</li>
               <li>Engaged in <strong>technical workshops and meetings</strong>, supporting solution design and implementation.</li>
             </ul>
-
             <div class="role-tech">
               <span class="tech-tag">Jira</span>
               <span class="tech-tag">Bitbucket</span>
@@ -471,14 +536,28 @@
       </div>
 
     </div><!-- end .timeline -->
-  </div><!-- end .timeline-wrapper -->
+  </div>
 
   <!-- ─── Education ────────────────────────────────────────────── -->
   <div class="education-section">
     <p class="section-label">Education</p>
-
     <div class="edu-card">
-      <h2 class="edu-school">Clemson University</h2>
+
+      <!-- Clemson paw + school name -->
+      <div class="edu-header">
+        <!--
+          Clemson Tiger Paw — inlined SVG, orange, no external dependency.
+        -->
+        <svg class="clemson-paw" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-label="Clemson Tiger Paw">
+          <ellipse cx="50" cy="66" rx="28" ry="24" fill="#F56600"/>
+          <ellipse cx="22" cy="38" rx="10" ry="13" fill="#F56600" transform="rotate(-20 22 38)"/>
+          <ellipse cx="37" cy="28" rx="10" ry="13" fill="#F56600" transform="rotate(-5 37 28)"/>
+          <ellipse cx="55" cy="26" rx="10" ry="13" fill="#F56600" transform="rotate(8 55 26)"/>
+          <ellipse cx="71" cy="34" rx="10" ry="13" fill="#F56600" transform="rotate(22 71 34)"/>
+        </svg>
+        <h2 class="edu-school">Clemson University</h2>
+      </div>
+
       <p class="edu-degree">B.S. in Computer Science · May 2026</p>
 
       <div class="edu-meta">
@@ -503,6 +582,62 @@
         <strong>Dean's List:</strong> Spring 2025
       </p>
     </div>
+  </div>
+
+  <!-- ─── Resume Viewer ────────────────────────────────────────── -->
+  <div class="resume-section">
+    <p class="section-label">Resume</p>
+
+    <div class="resume-card">
+
+      <!-- Header: label + download button -->
+      <div class="resume-card-header">
+        <span class="resume-card-title">Pascual Sebastian — Resume</span>
+        <!--
+          Download button: opens PDF in a new tab and triggers download.
+          UPLOAD: place Pascual_Sebastian_Resume.pdf in InfinityFree root.
+        -->
+        <a href="/Pascual_Sebastian_Resume.pdf" target="_blank" download class="btn-download">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          Download PDF
+        </a>
+      </div>
+
+      <!--
+        Inline PDF viewer — desktop only.
+        src points to the PDF uploaded to InfinityFree root.
+        The #toolbar=0 param hides the browser's PDF toolbar for a cleaner look.
+      -->
+      <div class="resume-iframe-wrap">
+        <iframe
+          class="resume-iframe"
+          src="/Pascual_Sebastian_Resume.pdf#toolbar=0&navpanes=0&scrollbar=1"
+          title="Pascual Sebastian Resume"
+          loading="lazy"
+        ></iframe>
+      </div>
+
+      <!--
+        Mobile fallback: shown instead of iframe on small screens.
+        Most mobile browsers don't embed PDFs inline.
+      -->
+      <div class="resume-mobile-fallback">
+        <p>PDF preview isn't available on mobile — tap below to open or download.</p>
+        <a href="/Pascual_Sebastian_Resume.pdf" target="_blank" class="btn-primary">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          Open Resume
+        </a>
+      </div>
+
+    </div><!-- end .resume-card -->
   </div>
 
   <!-- ─── Footer ───────────────────────────────────────────────── -->
